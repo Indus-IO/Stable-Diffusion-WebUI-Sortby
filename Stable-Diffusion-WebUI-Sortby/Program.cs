@@ -11,13 +11,20 @@ namespace Stable_Diffusion_WebUI_Sortby
     {
         Dictionary<string, string> paths = new Dictionary<string, string>()
         {
+            { "ui_extra_networks_lora.py", @"\extensions-builtin\Lora\ui_extra_networks_lora.py" },
+
             { "ui_extra_networks.py", @"\modules\ui_extra_networks.py" },
             { "ui_extra_networks_checkpoints.py", @"\modules\ui_extra_networks_checkpoints.py" },
             { "ui_extra_networks_hypernets.py", @"\modules\ui_extra_networks_hypernets.py" },
             { "ui_extra_networks_textual_inversion.py", @"\modules\ui_extra_networks_textual_inversion.py" },
-            { "ui_extra_networks_lora.py", @"\extensions-builtin\Lora\ui_extra_networks_lora.py" },
+            { "processing.py", @"\modules\processing.py" },
+            { "sd_models.py", @"\modules\sd_models.py" },
+
+
             { "extra-networks-card.html", @"\html\extra-networks-card.html" },
+
             { "extraNetworks.js", @"\javascript\extraNetworks.js" },
+            { "recentlyLoader.js", @"\javascript\recentlyLoader.js" },
         };
 
         static void Main(string[] args)
@@ -47,7 +54,6 @@ namespace Stable_Diffusion_WebUI_Sortby
 
         bool FileExistsCheck(string path)
         {
-            List<string> list = new List<string>();
             List<string> list2 = new List<string>();
 
             foreach (var kvp in paths)
@@ -55,21 +61,16 @@ namespace Stable_Diffusion_WebUI_Sortby
                 string a = path + kvp.Value;
                 string b = path + kvp.Value + ".bak";
 
-                if (!File.Exists(a))
-                    list.Add(a);
-
                 if (File.Exists(b))
                     list2.Add(b);
             }
 
             Console.ForegroundColor = ConsoleColor.Red;
-            foreach(var item in list)
-                Console.WriteLine("[누락된 파일]    " + item);
             foreach (var item in list2)
                 Console.WriteLine("[존재하는 파일]    " + item);
             Console.ResetColor();
             
-            return list.Count == 0 && list2.Count == 0;
+            return list2.Count == 0;
         }
 
         void FileBackup(string path)
@@ -79,7 +80,8 @@ namespace Stable_Diffusion_WebUI_Sortby
                 string source = path + kvp.Value;
                 string dest = source + ".bak";
                 
-                File.Move(source, dest);
+                if(File.Exists(source))
+                    File.Move(source, dest);
             }
         }
 

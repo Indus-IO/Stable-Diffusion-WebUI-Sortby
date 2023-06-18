@@ -16,10 +16,12 @@ class ExtraNetworksPageCheckpoints(ui_extra_networks.ExtraNetworksPage):
         checkpoint: sd_models.CheckpointInfo
         for name, checkpoint in sd_models.checkpoints_list.items():
             path, ext = os.path.splitext(checkpoint.filename)
-            time = os.path.getmtime(checkpoint.filename)
+            time = os.path.getmtime(checkpoint.filename)#added
+            size = os.path.getsize(checkpoint.filename)#added
             yield {
                 "name": checkpoint.name_for_extra,
                 "time": time,
+                "size": size,
                 "filename": path,
                 "preview": self.find_preview(path),
                 "description": self.find_description(path),

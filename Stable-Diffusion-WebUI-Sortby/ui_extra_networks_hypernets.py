@@ -14,11 +14,13 @@ class ExtraNetworksPageHypernetworks(ui_extra_networks.ExtraNetworksPage):
     def list_items(self):
         for name, path in shared.hypernetworks.items():
             path, ext = os.path.splitext(path)
-            time = os.path.getmtime(path)
+            time = os.path.getmtime(path)#added
+            size = os.path.getsize(path)#added
             
             yield {
                 "name": name,
-                "time": time,
+                "time": time,#added
+                "size": size,#added
                 "filename": path,
                 "preview": self.find_preview(path),
                 "description": self.find_description(path),
