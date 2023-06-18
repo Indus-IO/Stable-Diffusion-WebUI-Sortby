@@ -36,21 +36,41 @@ namespace Stable_Diffusion_WebUI_Sortby
 
         public Program()
         {
-            Console.WriteLine("설치 경로 입력");
+            WriteLine("설치 경로 입력", ConsoleColor.Yellow);
             string path = Console.ReadLine();
 
-            if(!FileExistsCheck(path))
+            WriteLine("1. 백업 & 다운로드", ConsoleColor.Yellow);
+            WriteLine("2. 복원", ConsoleColor.Yellow);
+            string input = Console.ReadLine();
+
+            if (input.Equals("1"))
+                Routine_Download(path);
+            else if (input.Equals("2"))
+                Routine_Restore(path);
+        }
+
+        #region Routine
+        void Routine_Download(string path)
+        {
+            if (!FileExistsCheck(path))
             {
-                WriteLine("설치 불가", ConsoleColor.Red);
+                WriteLine("이미 백업된 파일이 있어 복구가 불가능합니다.", ConsoleColor.Red);
                 return;
             }
 
-            FileBackup(path);
+            Backup(path);
             WriteLine("백업 완료", ConsoleColor.Green);
 
             FileDownload(path);
             WriteLine("설치 완료", ConsoleColor.Green);
         }
+
+        void Routine_Restore(string path)
+        {
+            Restore(path);
+            WriteLine("복원 완료", ConsoleColor.Green);
+        }
+        #endregion
 
         bool FileExistsCheck(string path)
         {
@@ -58,7 +78,6 @@ namespace Stable_Diffusion_WebUI_Sortby
 
             foreach (var kvp in paths)
             {
-                string a = path + kvp.Value;
                 string b = path + kvp.Value + ".bak";
 
                 if (File.Exists(b))
@@ -67,23 +86,46 @@ namespace Stable_Diffusion_WebUI_Sortby
 
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (var item in list2)
-                Console.WriteLine("[존재하는 파일]    " + item);
+                Console.WriteLine("[이미 백업된 파일]    " + item);
             Console.ResetColor();
             
             return list2.Count == 0;
         }
 
-        void FileBackup(string path)
+        #region Backup / Restore
+        void Backup(string path)
         {
             foreach (var kvp in paths)
             {
-                string source = path + kvp.Value;
-                string dest = source + ".bak";
-                
-                if(File.Exists(source))
-                    File.Move(source, dest);
+                string file = path + kvp.Value;
+                string bakFile = file + ".bak";
+
+                if (File.Exists(file))
+                {
+                    File.Move(file, bakFile);
+                    WriteLine("[백업 완료]    " + bakFile, ConsoleColor.Green);
+                }
             }
         }
+
+        void Restore(string path)
+        {
+            foreach (var kvp in paths)
+            {
+                string file = path + kvp.Value;
+                string bakFile = file + ".bak";
+
+                if (File.Exists(file))
+                    File.Delete(file);
+
+                if (File.Exists(bakFile))
+                {
+                    File.Move(bakFile, file);
+                    WriteLine("[복원 완료]    " + file, ConsoleColor.Green);
+                }
+            }
+        }
+        #endregion
 
         void FileDownload(string path)
         {
