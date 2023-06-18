@@ -627,24 +627,46 @@ def process_images(p: StableDiffusionProcessing) -> Processed:
 def process_images_inner(p: StableDiffusionProcessing) -> Processed:
     """this is the main loop that both txt2img and img2img use; it calls func_init once inside all the scopes and func_sample once per batch"""
     
-    pattern = r'<lora:(.*?):([\d.]+)>'#added
-    matches = re.findall(pattern, p.prompt)#added
-    
-    values = [match[0] for match in matches]#added
-    
-    if len(values) > 0:#added
-        if not os.path.exists('recently.dat'):#added
+
+    if type(p.prompt) == list:#added
+        for item in p.prompt:#added
+            pattern = r'<lora:(.*?):([\d.]+)>'#added
+            matches = re.findall(pattern, item)#added
+            
+            values = [match[0] for match in matches]#added
+            
+            if len(values) > 0:#added
+                if not os.path.exists('recently.dat'):#added
+                    with open('recently.dat', 'w') as file:#added
+                        pass#added
+            
+                with open('recently.dat', 'r') as file:#added
+                    fileData = file.read().splitlines()#added
+                
+                result = [x for x in fileData if x not in values]#added
+                result = result + values#added
+                
+                with open('recently.dat', 'w') as file:#added
+                    file.write('\n'.join(result))#added
+    else:#added
+        pattern = r'<lora:(.*?):([\d.]+)>'#added
+        matches = re.findall(pattern, p.prompt)#added
+        
+        values = [match[0] for match in matches]#added
+        
+        if len(values) > 0:#added
+            if not os.path.exists('recently.dat'):#added
+                with open('recently.dat', 'w') as file:#added
+                    pass#added
+        
+            with open('recently.dat', 'r') as file:#added
+                fileData = file.read().splitlines()#added
+            
+            result = [x for x in fileData if x not in values]#added
+            result = result + values#added
+            
             with open('recently.dat', 'w') as file:#added
-                pass#added
-    
-        with open('recently.dat', 'r') as file:#added
-            fileData = file.read().splitlines()#added
-        
-        result = [x for x in fileData if x not in values]#added
-        result = result + values#added
-        
-        with open('recently.dat', 'w') as file:#added
-            file.write('\n'.join(result))#added
+                file.write('\n'.join(result))#added
     
     if type(p.prompt) == list:
         assert(len(p.prompt) > 0)
