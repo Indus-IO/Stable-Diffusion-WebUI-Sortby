@@ -10,6 +10,7 @@ xhr.onreadystatechange = function () {
         recently = lines.map(function (line) {
             return line.trim();
         });
+        recently.reverse();
     }
 };
 
