@@ -54,7 +54,7 @@ namespace Stable_Diffusion_WebUI_Sortby
         {
             if (!FileExistsCheck(path))
             {
-                WriteLine("이미 백업된 파일이 있어 복구가 불가능합니다.", ConsoleColor.Red);
+                WriteLine("이미 백업된 파일이 있어 설치가 불가능합니다.", ConsoleColor.Red);
                 return;
             }
 
@@ -67,29 +67,29 @@ namespace Stable_Diffusion_WebUI_Sortby
 
         void Routine_Restore(string path)
         {
-            Restore(path);
-            WriteLine("복원 완료", ConsoleColor.Green);
+            if(Restore(path))
+                WriteLine("복원 완료", ConsoleColor.Green);
         }
         #endregion
 
         bool FileExistsCheck(string path)
         {
-            List<string> list2 = new List<string>();
+            List<string> list = new List<string>();
 
             foreach (var kvp in paths)
             {
                 string b = path + kvp.Value + ".bak";
 
                 if (File.Exists(b))
-                    list2.Add(b);
+                    list.Add(b);
             }
 
             Console.ForegroundColor = ConsoleColor.Red;
-            foreach (var item in list2)
+            foreach (var item in list)
                 Console.WriteLine("[이미 백업된 파일]    " + item);
             Console.ResetColor();
-            
-            return list2.Count == 0;
+
+            return list.Count == 0;
         }
 
         #region Backup / Restore
@@ -108,8 +108,24 @@ namespace Stable_Diffusion_WebUI_Sortby
             }
         }
 
-        void Restore(string path)
+        bool Restore(string path)
         {
+            List<string> list = new List<string>();
+
+            foreach (var kvp in paths)
+            {
+                string bakFile = path + kvp.Value + ".bak";
+                
+                if (File.Exists(bakFile))
+                    list.Add(bakFile);
+            }
+
+            if(list.Count == 0)
+            {
+                WriteLine("복원할 파일이 없습니다.", ConsoleColor.Red);
+                return false;
+            }
+
             foreach (var kvp in paths)
             {
                 string file = path + kvp.Value;
@@ -124,6 +140,8 @@ namespace Stable_Diffusion_WebUI_Sortby
                     WriteLine("[복원 완료]    " + file, ConsoleColor.Green);
                 }
             }
+
+            return true;
         }
         #endregion
 
