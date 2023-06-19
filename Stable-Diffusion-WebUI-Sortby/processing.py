@@ -627,12 +627,16 @@ def process_images(p: StableDiffusionProcessing) -> Processed:
 def process_images_inner(p: StableDiffusionProcessing) -> Processed:
     """this is the main loop that both txt2img and img2img use; it calls func_init once inside all the scopes and func_sample once per batch"""
     
-    pattern = r'<(lora|hypernet):(.*?):([\d.]+)>'#added
+    pattern = r'<lora:(.*?):([\d.]+)>'#added
+    pattern2 = r'<hypernet:(.*?):([\d.]+)>'#added
+    values = []
+    
     if type(p.prompt) == list:#added
         for item in p.prompt:#added
-            matches = re.findall(pattern, item)#added
-            
-            values = [match[0] for match in matches]#added
+            matches = re.findall(pattern, item)
+            values.extend([match[0] for match in matches])
+            matches2 = re.findall(pattern2, item)
+            values.extend([match[0] for match in matches2])
             
             if len(values) > 0:#added
                 if not os.path.exists('recently.dat'):#added
@@ -648,9 +652,10 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
                 with open('recently.dat', 'w') as file:#added
                     file.write('\n'.join(result))#added
     else:#added
-        matches = re.findall(pattern, p.prompt)#added
-        
-        values = [match[0] for match in matches]#added
+        matches = re.findall(pattern, p.prompt)
+        values.extend([match[0] for match in matches])
+        matches2 = re.findall(pattern2, p.prompt)
+        values.extend([match[0] for match in matches2])
         
         if len(values) > 0:#added
             if not os.path.exists('recently.dat'):#added
