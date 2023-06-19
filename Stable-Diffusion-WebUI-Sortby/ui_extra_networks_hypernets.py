@@ -14,8 +14,8 @@ class ExtraNetworksPageHypernetworks(ui_extra_networks.ExtraNetworksPage):
     def list_items(self):
         for name, path in shared.hypernetworks.items():
             path, ext = os.path.splitext(path)
-            time = os.path.getmtime(path)#added
-            size = os.path.getsize(path)#added
+            time = os.path.getmtime(path + ext)#added
+            size = os.path.getsize(path + ext)#added
             
             yield {
                 "name": name,
