@@ -185,39 +185,23 @@ class ExtraNetworksPage:
         if search_only and shared.opts.extra_networks_hidden_models == "Never":
             return ""
         
-        if "{time}" in self.card_page: # changed
-            args = {
-                "background_image": background_image,
-                "style": f"'display: none; {height}{width}'",
-                "prompt": item.get("prompt", None),
-                "tabname": json.dumps(tabname),
-                "local_preview": json.dumps(item["local_preview"]),
-                "name": item["name"],
-                "time": item["time"], # added
-                "size": item["size"], # added
-                "description": (item.get("description") or ""),
-                "card_clicked": onclick,
-                "save_card_preview": '"' + html.escape(f"""return saveCardPreview(event, {json.dumps(tabname)}, {json.dumps(item["local_preview"])})""") + '"',
-                "search_term": item.get("search_term", ""),
-                "metadata_button": metadata_button,
-                "search_only": " search_only" if search_only else "",
-            }
-        else:
-            args = {
-                "background_image": background_image,
-                "style": f"'display: none; {height}{width}'",
-                "prompt": item.get("prompt", None),
-                "tabname": json.dumps(tabname),
-                "local_preview": json.dumps(item["local_preview"]),
-                "name": item["name"],
-                "description": (item.get("description") or ""),
-                "card_clicked": onclick,
-                "save_card_preview": '"' + html.escape(f"""return saveCardPreview(event, {json.dumps(tabname)}, {json.dumps(item["local_preview"])})""") + '"',
-                "search_term": item.get("search_term", ""),
-                "metadata_button": metadata_button,
-                "search_only": " search_only" if search_only else "",
-            }
-
+        args = {
+            "background_image": background_image,
+            "style": f"'display: none; {height}{width}'",
+            "prompt": item.get("prompt", None),
+            "tabname": json.dumps(tabname),
+            "local_preview": json.dumps(item["local_preview"]),
+            "name": item["name"],
+            "time": (item.get("time") or ""),
+            "size": (item.get("size") or ""),
+            "description": (item.get("description") or ""),
+            "card_clicked": onclick,
+            "save_card_preview": '"' + html.escape(f"""return saveCardPreview(event, {json.dumps(tabname)}, {json.dumps(item["local_preview"])})""") + '"',
+            "search_term": item.get("search_term", ""),
+            "metadata_button": metadata_button,
+            "search_only": " search_only" if search_only else "",
+        }
+        
         return self.card_page.format(**args)
 
     def find_preview(self, path):
@@ -393,4 +377,3 @@ def setup_ui(ui, gallery):
         inputs=[ui.preview_target_filename, gallery, ui.preview_target_filename],
         outputs=[*ui.pages]
     )
-
